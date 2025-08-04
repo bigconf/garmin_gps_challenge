@@ -12,24 +12,24 @@ logging.basicConfig(level=logging.INFO)
 
 logging.basicConfig(level=logging.INFO)
 
-def login(username: str):
+def login(username: str, password: str):
     """Login to Garmin and save session for the given user."""
-    load_dotenv()
-    password = os.getenv("GARMIN_PASSWORD")  # Or prompt for password
-    garth.login(username, password, prompt_mfa=lambda: input("Enter MFA code: "))
-    
+    garth.login(username, password)  # Remove input() for MFA unless handled via Streamlit
     session_dir = os.path.join("garmin_sessions", username)
     os.makedirs(session_dir, exist_ok=True)
     garth.save(session_dir)
     logging.info(f"Logged in and session saved for {username}")
 
-def resume_session(username: str):
+
+def resume_session(username: str, password: str = None):
     """Resume Garmin session for the given user or prompt login if missing/expired."""
     session_dir = os.path.join("garmin_sessions", username)
-    
+
     if not os.path.exists(session_dir):
         logging.warning(f"No session found for {username}. Logging in.")
-        login(username)
+        if password is None:
+            raise ValueError("Password required for login.")
+        login(username, password)
         return
 
     try:
@@ -38,7 +38,10 @@ def resume_session(username: str):
         logging.info(f"Session resumed for {username}")
     except GarthException:
         logging.warning(f"Session expired for {username}. Logging in again.")
-        login(username)
+        if password is None:
+            raise ValueError("Password required for login.")
+        login(username, password)
+
 
 
 def download_activities(n: Optional[int] = None) -> pd.DataFrame:
@@ -102,30 +105,4 @@ def download_fit_files(sport: str, df: pd.DataFrame, username: str):
 
 
 
-# def download_fit_files(sport: str, df: pd.DataFrame):
-#     """Download .fit files for new activities and track them in activity_ids.csv."""
-#     folder_name = f"{sport}_fit_files"
-#     os.makedirs(folder_name, exist_ok=True)
 
-#     existing_ids = set()
-#     if os.path.exists('activity_ids.csv'):
-#         with open('activity_ids.csv', 'r') as f:
-#             reader = csv.reader(f)
-#             existing_ids = {row[0] for row in reader}
-
-#     with open('activity_ids.csv', 'a', newline='') as f:
-#         writer = csv.writer(f)
-#         for activity_id in df['activityId']:
-#             if str(activity_id) in existing_ids:
-#                 logging.info(f"Activity {activity_id} already exists. Skipping.")
-#                 continue
-
-#             file_path = os.path.join(folder_name, f"{activity_id}.fit")
-#             try:
-#                 fit_data = garth.download(f"/download-service/files/activity/{activity_id}")
-#                 with open(file_path, "wb") as fit_file:
-#                     fit_file.write(fit_data)
-#                 logging.info(f"Downloaded FIT file for activity {activity_id}")
-#                 writer.writerow([activity_id])
-#             except Exception as e:
-#                 logging.error(f"Failed to download FIT file for activity {activity_id}: {e}")
