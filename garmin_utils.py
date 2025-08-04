@@ -82,7 +82,7 @@ def filter_activities_by_sport(df, sport: str):
     Filters Garmin activities by sport category using predefined type groups.
     """
     sport_types = SPORT_TYPE_GROUPS.get(sport.lower(), [sport.lower()])
-    return df[df["activityType"].str.lower().isin(sport_types)]
+    return df[df["activityType.typeKey"].str.lower().isin(sport_types)]
 
 
 def download_fit_files(sport: str, df: pd.DataFrame, username: str):
