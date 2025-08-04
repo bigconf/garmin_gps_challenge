@@ -9,8 +9,12 @@ from dotenv import load_dotenv
 
 logging.basicConfig(level=logging.INFO)
 
-
-logging.basicConfig(level=logging.INFO)
+SPORT_TYPE_GROUPS = {
+    "cycling": ["cycling", "road_biking", "gravel_cycling", "mountain_biking", "e_biking"],
+    "running": ["running", "trail_running", "treadmill_running"],
+    "walking": ["walking", "hiking", "indoor_walking"],
+    "swimming": ["swimming", "open_water_swimming", "pool_swimming"]
+}
 
 def login(username: str, password: str):
     """Login to Garmin and save session for the given user."""
@@ -68,10 +72,18 @@ def download_activities(n: Optional[int] = None) -> pd.DataFrame:
     mask = df['activityType.typeKey'].str.contains('|'.join(virtual_keywords), case=False, na=False)
     return df[~mask].reset_index(drop=True)
 
-def filter_cycling_activities(df: pd.DataFrame) -> pd.DataFrame:
-    """Filter DataFrame to include only cycling-related activities."""
-    cycling_types = ['cycling', 'road_biking', 'gravel_cycling']
-    return df[df['activityType.typeKey'].isin(cycling_types)].reset_index(drop=True)
+# def filter_cycling_activities(df: pd.DataFrame) -> pd.DataFrame:
+#     """Filter DataFrame to include only cycling-related activities."""
+#     cycling_types = ['cycling', 'road_biking', 'gravel_cycling']
+#     return df[df['activityType.typeKey'].isin(cycling_types)].reset_index(drop=True)
+
+def filter_activities_by_sport(df, sport: str):
+    """
+    Filters Garmin activities by sport category using predefined type groups.
+    """
+    sport_types = SPORT_TYPE_GROUPS.get(sport.lower(), [sport.lower()])
+    return df[df["activityType"].str.lower().isin(sport_types)]
+
 
 def download_fit_files(sport: str, df: pd.DataFrame, username: str):
     folder_name = f"user_data/{username}/{sport}_fit_files"
