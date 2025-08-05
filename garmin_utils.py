@@ -6,6 +6,7 @@ import pandas as pd
 import garth
 from garth.exc import GarthException
 from dotenv import load_dotenv
+import streamlit as st
 
 logging.basicConfig(level=logging.INFO)
 
@@ -72,10 +73,6 @@ def download_activities(n: Optional[int] = None) -> pd.DataFrame:
     mask = df['activityType.typeKey'].str.contains('|'.join(virtual_keywords), case=False, na=False)
     return df[~mask].reset_index(drop=True)
 
-# def filter_cycling_activities(df: pd.DataFrame) -> pd.DataFrame:
-#     """Filter DataFrame to include only cycling-related activities."""
-#     cycling_types = ['cycling', 'road_biking', 'gravel_cycling']
-#     return df[df['activityType.typeKey'].isin(cycling_types)].reset_index(drop=True)
 
 def filter_activities_by_sport(df, sport: str):
     """
@@ -98,9 +95,12 @@ def download_fit_files(sport: str, df: pd.DataFrame, username: str):
             reader = csv.reader(f)
             existing_ids = {row[0] for row in reader}
 
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+
     with open(activity_ids_path, 'a', newline='') as f:
         writer = csv.writer(f)
-        for activity_id in df['activityId']:
+        for i, activity_id in enumerate(df['activityId']):
             if str(activity_id) in existing_ids:
                 logging.info(f"Activity {activity_id} already exists. Skipping.")
                 continue
@@ -115,6 +115,8 @@ def download_fit_files(sport: str, df: pd.DataFrame, username: str):
             except Exception as e:
                 logging.error(f"Failed to download FIT file for activity {activity_id}: {e}")
 
+            progress_bar.progress((i + 1) / len(df))
+            status_text.text(f"Downloading {i + 1}/{len(df)} FIT files")
 
-
+    status_text.text("✅ FIT file download complete.")
 

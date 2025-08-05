@@ -6,9 +6,9 @@ import streamlit as st
 
 logging.basicConfig(level=logging.INFO)
 
-def extract_gps_from_fit(file_path: str, username: str) -> int:
+def extract_gps_from_fit(file_path: str, username: str, sport: str) -> int:
     activity_id = os.path.splitext(os.path.basename(file_path))[0]
-    gps_csv_path = os.path.join("user_data", username, "gps_points.csv")
+    gps_csv_path = os.path.join("user_data", username, f"{sport}_gps_points.csv")
     os.makedirs(os.path.dirname(gps_csv_path), exist_ok=True)
 
     # Load existing data if available
@@ -45,7 +45,7 @@ def extract_gps_from_fit(file_path: str, username: str) -> int:
 
 
 
-def process_fit_folder(folder_path: str, username: str):
+def process_fit_folder(folder_path: str, username: str, sport: str):
     fit_files = [f for f in os.listdir(folder_path) if f.endswith(".fit")]
     total_files = len(fit_files)
 
@@ -59,7 +59,7 @@ def process_fit_folder(folder_path: str, username: str):
 
     for i, filename in enumerate(fit_files):
         file_path = os.path.join(folder_path, filename)
-        points = extract_gps_from_fit(file_path, username)
+        points = extract_gps_from_fit(file_path, username, sport)
         total_points += points
         progress_bar.progress((i + 1) / total_files)
         status_text.text(f"Processing {filename} ({i+1}/{total_files})")

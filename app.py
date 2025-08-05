@@ -8,12 +8,11 @@ from gps_processing import (
     mark_crossed_areas,
     calculate_crossing_stats
 )
-from unzip_utils import unzip_fit_files
 from streamlit_folium import st_folium
 import folium
 import os
 from map_utils import generate_map_with_stats
-from file_utils import cleanup_fit_folder
+from file_utils import cleanup_fit_folder, unzip_fit_files
 
 st.set_page_config(page_title="Postcode Challenge", layout="wide")
 st.title("🚴‍♂️ Postcode Challenge")
@@ -65,7 +64,7 @@ if st.button("Extract GPS from FIT files"):
     #unzip_fit_files("cycling", username)  # Optional if files are zipped
     user_fit_folder = os.path.join("user_data", username, f"{selected_sport}_fit_files", "unzipped")
     #user_fit_folder = os.path.join("user_data", username, "cycling_fit_files", "unzipped")
-    process_fit_folder(user_fit_folder, username)
+    process_fit_folder(user_fit_folder, username, selected_sport)
     st.success("GPS data extracted and saved to gps_points.csv")
     cleanup_fit_folder(username, selected_sport)
     #cleanup_fit_folder(username)
@@ -74,7 +73,7 @@ if st.button("Extract GPS from FIT files"):
 # Step 4: Analyze GPS Tracks
 st.header("Step 4: Analyze GPS Tracks")
 if st.button("Analyze Tracks"):
-    gps_csv_path = os.path.join("user_data", username, "gps_points.csv")
+    gps_csv_path = os.path.join("user_data", username, f"{selected_sport}_gps_points.csv")
     if os.path.exists(gps_csv_path):
         with st.spinner("Loading GPS data..."):
             gdf_gps = load_gps_csv_to_geodataframe(gps_csv_path)
