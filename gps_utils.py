@@ -3,12 +3,14 @@ import os
 from fitparse import FitFile
 import logging
 import streamlit as st
+from file_utils import get_user_path
 
 logging.basicConfig(level=logging.INFO)
 
 def extract_gps_from_fit(file_path: str, username: str, sport: str) -> int:
     activity_id = os.path.splitext(os.path.basename(file_path))[0]
-    gps_csv_path = os.path.join("user_data", username, f"{sport}_gps_points.csv")
+    gps_csv_path = get_user_path(username, sport, file_type="gps")
+
     os.makedirs(os.path.dirname(gps_csv_path), exist_ok=True)
 
     # Load existing data if available

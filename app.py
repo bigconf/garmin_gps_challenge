@@ -12,7 +12,7 @@ from streamlit_folium import st_folium
 import folium
 import os
 from map_utils import generate_map_with_stats
-from file_utils import cleanup_fit_folder, unzip_fit_files
+from file_utils import cleanup_fit_folder, unzip_fit_files, get_user_path
 
 st.set_page_config(page_title="Postcode Challenge", layout="wide")
 st.title("🚴‍♂️ Postcode Challenge")
@@ -53,27 +53,20 @@ if st.button("Download Activities"):
     st.success(f"Found {len(df_filtered)} {selected_sport} activities with GPS")
     download_fit_files(selected_sport, df_filtered, username)
    
-    #df_cycling = filter_cycling_activities(df_all)
-    #st.success(f"Found {len(df_cycling)} cycling activities with GPS")
-    #download_fit_files("cycling", df_cycling, username)
-
 # Step 3: Extract GPS Data
 st.header("Step 3: Extract GPS Data")
 if st.button("Extract GPS from FIT files"):
     unzip_fit_files(selected_sport, username)
-    #unzip_fit_files("cycling", username)  # Optional if files are zipped
-    user_fit_folder = os.path.join("user_data", username, f"{selected_sport}_fit_files", "unzipped")
-    #user_fit_folder = os.path.join("user_data", username, "cycling_fit_files", "unzipped")
+    user_fit_folder = get_user_path(username, selected_sport, file_type="fit", subfolder="unzipped")
     process_fit_folder(user_fit_folder, username, selected_sport)
     st.success("GPS data extracted and saved to gps_points.csv")
     cleanup_fit_folder(username, selected_sport)
-    #cleanup_fit_folder(username)
 
 
 # Step 4: Analyze GPS Tracks
 st.header("Step 4: Analyze GPS Tracks")
 if st.button("Analyze Tracks"):
-    gps_csv_path = os.path.join("user_data", username, f"{selected_sport}_gps_points.csv")
+    gps_csv_path = get_user_path(username, selected_sport, file_type="gps")
     if os.path.exists(gps_csv_path):
         with st.spinner("Loading GPS data..."):
             gdf_gps = load_gps_csv_to_geodataframe(gps_csv_path)
