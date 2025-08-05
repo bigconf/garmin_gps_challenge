@@ -9,9 +9,16 @@ from streamlit_folium import st_folium
 import pandas as pd
 from shapely.geometry import Point
 
-def load_gps_csv_to_geodataframe(csv_path: str) -> gpd.GeoDataFrame:
-    """Load GPS points from CSV and convert to GeoDataFrame."""
-    df = pd.read_csv(csv_path, header=None, names=["lat", "lon", "activity_id"])
+def load_gps_csv_to_geodataframe(csv_path: str, sport_filter: str = None) -> gpd.GeoDataFrame:
+    """
+    Load GPS points from CSV and convert to GeoDataFrame.
+    Optionally filter by sport type.
+    """
+    df = pd.read_csv(csv_path, header=None, names=["lat", "lon", "activity_id", "sport"])
+
+    if sport_filter:
+        df = df[df["sport"] == sport_filter]
+
     geometry = [Point(lon, lat) for lat, lon in zip(df["lat"], df["lon"])]
     gdf = gpd.GeoDataFrame(df, geometry=geometry, crs="EPSG:4326")
     return gdf

@@ -7,6 +7,9 @@ import garth
 from garth.exc import GarthException
 from dotenv import load_dotenv
 import streamlit as st
+import garth
+from file_utils import get_user_path
+
 
 logging.basicConfig(level=logging.INFO)
 
@@ -83,40 +86,44 @@ def filter_activities_by_sport(df, sport: str):
 
 
 def download_fit_files(sport: str, df: pd.DataFrame, username: str):
-    folder_name = f"user_data/{username}/{sport}_fit_files"
-    os.makedirs(folder_name, exist_ok=True)
-
-    activity_ids_path = os.path.join(f"user_data/{username}", "activity_ids.csv")
-    os.makedirs(os.path.dirname(activity_ids_path), exist_ok=True)
-
+    gps_csv_path = get_user_path(username, file_type="gps")
     existing_ids = set()
-    if os.path.exists(activity_ids_path):
-        with open(activity_ids_path, 'r') as f:
-            reader = csv.reader(f)
-            existing_ids = {row[0] for row in reader}
+
+    if gps_csv_path.exists():
+        df_gps = pd.read_csv(gps_csv_path, header=None, names=["lat", "lon", "activity_id", "sport"])
+        existing_ids = set(df_gps[df_gps["sport"] == sport]["activity_id"].astype(str).unique())
+
+    fit_folder = get_user_path(username, sport, file_type="fit")
+    fit_folder.mkdir(parents=True, exist_ok=True)
 
     progress_bar = st.progress(0)
     status_text = st.empty()
 
-    with open(activity_ids_path, 'a', newline='') as f:
-        writer = csv.writer(f)
-        for i, activity_id in enumerate(df['activityId']):
-            if str(activity_id) in existing_ids:
-                logging.info(f"Activity {activity_id} already exists. Skipping.")
-                continue
+    downloaded = 0
+    skipped = 0
+    total = len(df)
 
-            file_path = os.path.join(folder_name, f"{activity_id}.fit")
+    for i, activity_id in enumerate(df['activityId']):
+        activity_id_str = str(activity_id)
+        if activity_id_str in existing_ids:
+            logging.info(f"GPS data for activity {activity_id_str} already exists. Skipping download.")
+            skipped += 1
+        else:
+            file_path = fit_folder / f"{activity_id_str}.fit"
             try:
-                fit_data = garth.download(f"/download-service/files/activity/{activity_id}")
+                fit_data = garth.download(f"/download-service/files/activity/{activity_id_str}")
                 with open(file_path, "wb") as fit_file:
                     fit_file.write(fit_data)
-                logging.info(f"Downloaded FIT file for activity {activity_id}")
-                writer.writerow([activity_id])
+                logging.info(f"Downloaded FIT file for activity {activity_id_str}")
+                downloaded += 1
             except Exception as e:
-                logging.error(f"Failed to download FIT file for activity {activity_id}: {e}")
+                logging.error(f"Failed to download FIT file for activity {activity_id_str}: {e}")
 
-            progress_bar.progress((i + 1) / len(df))
-            status_text.text(f"Downloading {i + 1}/{len(df)} FIT files")
+        progress_bar.progress((i + 1) / total)
+        status_text.text(f"Downloading {i + 1}/{total} FIT files")
 
     status_text.text("✅ FIT file download complete.")
-
+    st.success(
+        f"Out of {total} {sport} activities, {downloaded} .fit files have been downloaded. "
+        f"For the remaining {skipped} {sport} activities, GPS data already exists in gps_points.csv."
+    )

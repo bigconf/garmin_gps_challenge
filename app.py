@@ -1,5 +1,11 @@
 import streamlit as st
-from garmin_utils import resume_session, download_activities, filter_activities_by_sport, download_fit_files, SPORT_TYPE_GROUPS
+from garmin_utils import (
+    resume_session, 
+    download_activities, 
+    filter_activities_by_sport, 
+    download_fit_files, 
+    SPORT_TYPE_GROUPS
+)
 from gps_utils import process_fit_folder
 from gps_processing import (
     load_gps_csv_to_geodataframe,
@@ -43,33 +49,28 @@ else:
 st.header("Step 1: Select sport")
 selected_sport = st.selectbox("Choose sport", list(SPORT_TYPE_GROUPS.keys()))
 
-
-# Step 2: Garmin Download
-st.header("Step 2: Download Garmin Activities")
-activity_count = st.number_input("Number of latest activities to download (leave 0 for all)", min_value=0, value=50)
-if st.button("Download Activities"):
+# Step 2: Garmin Download and Extract GPS data 
+st.header("Step 2: Download Garmin Activities and extract GPS data")
+activity_count = st.number_input("Number of latest activities to download (leave 0 for all). Please be aware this number includes all sports types.", min_value=0, value=50)
+if st.button("Start"):
     df_all = download_activities(None if activity_count == 0 else activity_count)
     df_filtered = filter_activities_by_sport(df_all, selected_sport)
     st.success(f"Found {len(df_filtered)} {selected_sport} activities with GPS")
     download_fit_files(selected_sport, df_filtered, username)
-   
-# Step 3: Extract GPS Data
-st.header("Step 3: Extract GPS Data")
-if st.button("Extract GPS from FIT files"):
     unzip_fit_files(selected_sport, username)
-    user_fit_folder = get_user_path(username, selected_sport, file_type="fit", subfolder="unzipped")
+    user_fit_folder = str(get_user_path(username, selected_sport, file_type="fit", subfolder="unzipped"))
     process_fit_folder(user_fit_folder, username, selected_sport)
     st.success("GPS data extracted and saved to gps_points.csv")
     cleanup_fit_folder(username, selected_sport)
 
-
-# Step 4: Analyze GPS Tracks
-st.header("Step 4: Analyze GPS Tracks")
+# Step 3: Analyze GPS Tracks
+st.header("Step 3: Analyze GPS Tracks")
 if st.button("Analyze Tracks"):
-    gps_csv_path = get_user_path(username, selected_sport, file_type="gps")
+
+    gps_csv_path = str(get_user_path(username, file_type="gps"))
     if os.path.exists(gps_csv_path):
         with st.spinner("Loading GPS data..."):
-            gdf_gps = load_gps_csv_to_geodataframe(gps_csv_path)
+            gdf_gps = load_gps_csv_to_geodataframe(gps_csv_path, sport_filter=selected_sport)
 
         with st.spinner("Loading postcode data..."):
             gdf_postcode = load_postcode_data("postcodes/cbs_pc4_2023.gpkg")
@@ -96,8 +97,8 @@ if st.button("Analyze Tracks"):
         st.error("GPS CSV file not found. Please extract GPS data first.")
 
 
-# Step 5: Generate Map with stats
-st.header("Step 5: Generate map with stats")
+# Step 4: Generate Map with stats
+st.header("Step 4: Generate map with stats")
 
 if st.button("Generate HTML Map with Stats"):
     gdf_postcode = st.session_state.get("gdf_postcode")
