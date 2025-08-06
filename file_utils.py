@@ -4,6 +4,7 @@ import logging
 import streamlit as st
 from pathlib import Path
 import zipfile
+from typing import Optional
 
 def cleanup_fit_folder(username: str, sport: str = "cycling"):
     """
@@ -49,7 +50,7 @@ def unzip_fit_files(sport: str, username: str) -> list:
     return unzipped_files
 
 
-def get_user_path(username: str, sport: str = None, file_type: str = "gps", subfolder: str = "") -> Path:
+def get_user_path(username: str, sport: Optional[str] = None, file_type: str = "gps", subfolder: str = "") -> Path:
     """
     Constructs user-specific paths for different file types and sports.
 

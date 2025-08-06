@@ -8,8 +8,9 @@ from shapely.geometry import LineString
 from streamlit_folium import st_folium
 import pandas as pd
 from shapely.geometry import Point
+from typing import Optional
 
-def load_gps_csv_to_geodataframe(csv_path: str, sport_filter: str = None) -> gpd.GeoDataFrame:
+def load_gps_csv_to_geodataframe(csv_path: str, sport_filter: Optional[str] = None) -> gpd.GeoDataFrame:
     """
     Load GPS points from CSV and convert to GeoDataFrame.
     Optionally filter by sport type.

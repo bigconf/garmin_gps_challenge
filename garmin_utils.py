@@ -29,7 +29,7 @@ def login(username: str, password: str):
     logging.info(f"Logged in and session saved for {username}")
 
 
-def resume_session(username: str, password: str = None):
+def resume_session(username: str, password: Optional[str] = None):
     """Resume Garmin session for the given user or prompt login if missing/expired."""
     session_dir = os.path.join("garmin_sessions", username)
 

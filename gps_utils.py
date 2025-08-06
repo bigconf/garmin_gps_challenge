@@ -25,8 +25,8 @@ def extract_gps_from_fit(file_path: Path, username: str, sport: str) -> int:
     fitfile = FitFile(str(file_path))
     new_rows = []
 
-    for record in fitfile.get_messages("record"):
-        record_data = {d.name: d.value for d in record}
+    for record in fitfile.get_messages("record"): 
+        record_data = {d.name: d.value for d in record} # type: ignore
         lat_raw = record_data.get("position_lat")
         lon_raw = record_data.get("position_long")
 
