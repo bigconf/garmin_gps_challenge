@@ -1,6 +1,6 @@
 # 🗺️ Garmin_GPS_Challenge
 
-**Garmin_GPS_Challenge** is a Streamlit-based web app for analyzing Garmin GPS activity data and visualizing intersections with Dutch postcode regions (CBS PC4). Designed for cyclists and runners, the app combines geospatial analysis with a user-friendly interface.
+**Garmin_GPS_Challenge** is a Streamlit-based web app for downloading and analyzing Garmin GPS activity data and visualizing intersections with Dutch postcode regions (CBS PC4). Designed for cyclists and runners, the app combines geospatial analysis with a user-friendly interface. 
 
 ## 🚀 Features
 
@@ -10,6 +10,16 @@
 - 🗺️ Visualize activities and progress on interactive Folium maps
 - 🏃 Multi-sport support (cycling, running, walking)
 - 📊 Stats panel showing progress toward postcode coverage
+
+## Dependencies
+
+This project uses the following Python libraries:
+
+- Garth: A Python wrapper for Garmin Connect authentication.
+- Garminconnect: A Python client for accessing Garmin connect data.
+
+These libraries are listed in `requirements.txt` and are required to run the app.
+
 
 ## 📁 Project Structure
 ```text
@@ -69,3 +79,6 @@ Contributions are welcome! Please open an issue or submit a pull request.
 
 📄 License
 MIT License
+
+Credits
+Special thanks to the developers of garth and garminconnect for making Garmin data accessible via Python.
