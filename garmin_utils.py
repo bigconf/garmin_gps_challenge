@@ -17,7 +17,6 @@ SPORT_TYPE_GROUPS = {
     "cycling": ["cycling", "road_biking", "gravel_cycling", "mountain_biking", "e_biking"],
     "running": ["running", "trail_running", "treadmill_running"],
     "walking": ["walking", "hiking", "indoor_walking"],
-    "swimming": ["swimming", "open_water_swimming", "pool_swimming"]
 }
 
 def login(username: str, password: str):

@@ -1,0 +1,9 @@
+streamlit
+pandas
+geopandas
+folium
+matplotlib
+fitparse
+shapely
+python-dotenv
+garth
