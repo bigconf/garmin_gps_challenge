@@ -33,8 +33,8 @@ POSTCODECHALLENGE/
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/postcodechallenge.git
-   cd postcodechallenge
+   git clone https://github.com/bigconf/garmin_gps_challenge.git
+   cd garmin_gps_challenge
 
 2. **Create a virtual environment (recommended)**:
 python -m venv .venv
