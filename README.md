@@ -1,6 +1,6 @@
 # 🗺️ Garmin_GPS_Challenge
 
-**Garmin_GPS_Challenge** is a Streamlit-based web app for downloading and analyzing Garmin GPS activity data and visualizing intersections with Dutch postcode regions (CBS PC4). Designed for cyclists and runners, the app combines geospatial analysis with a user-friendly interface. 
+**Garmin_GPS_Challenge** is a Streamlit-based web app for downloading and analyzing Garmin GPS activity data and visualizing intersections with Dutch postcode regions (CBS PC4), similar to the dutch "PostcodeChallenge" app for Strava users. Designed for cyclists and runners that use the Garmin ecosystem instead of Strava, who would like to know their score on the PostcodeChallenge. 
 
 ## 🚀 Features
 
@@ -33,7 +33,7 @@ POSTCODECHALLENGE/
 ├── garmin_sessions/ # Saved Garmin login sessions 
 ├── postcodes/ 
     └── cbs_pc4_2023.gpkg # CBS PC4 postcode boundaries 
-├── user_data/ # User-specific GPS and FIT data 
+├── user_data/ # User-specific GPS and activity data 
 ├── requirements.txt # Python dependencies 
 ├── .gitignore # Files excluded from version control 
 └── .env # Garmin credentials (not tracked)
