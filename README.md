@@ -12,9 +12,9 @@
 - 📊 Stats panel showing progress toward postcode coverage
 
 ## 📁 Project Structure
-
+```text
 POSTCODECHALLENGE/ 
-├── app.py # Main Streamlit app 
+├── app.py # Main Streamlit app
 ├── file_utils.py # File handling and path management 
 ├── garmin_utils.py # Garmin Connect API logic 
 ├── gps_processing.py # GPS data parsing and intersection analysis 
@@ -27,7 +27,7 @@ POSTCODECHALLENGE/
 ├── requirements.txt # Python dependencies 
 ├── .gitignore # Files excluded from version control 
 └── .env # Garmin credentials (not tracked)
-
+```
 
 ## 🛠️ Installation
 
@@ -37,18 +37,23 @@ POSTCODECHALLENGE/
    cd garmin_gps_challenge
 
 2. **Create a virtual environment (recommended)**:
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+    ```bash
+    python -m venv .venv
+    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 
 3. **Install dependencies**:
-pip install -r requirements.txt
+    ```bash
+    pip install -r requirements.txt
 
 4. **Create a .env file with your Garmin credentials (optional)**:
-GARMIN_USERNAME=your_email_or_username
-GARMIN_PASSWORD=your_password
+    ```bash
+    GARMIN_USERNAME=your_email_or_username
+    GARMIN_PASSWORD=your_password
 
 5. **Run the app**:
+    '''bash
+   streamlit run app.py
 
 📌 Notes
 The app uses cbs_pc4_2023.gpkg for postcode region analysis.
