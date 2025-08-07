@@ -11,6 +11,12 @@
 - 🏃 Multi-sport support (cycling, running, walking)
 - 📊 Stats panel showing progress toward postcode coverage
 
+## Screenshots
+<img width="1607" height="1004" alt="image" src="https://github.com/user-attachments/assets/f0bb6aa1-3eb1-4754-9a4e-78d1ee309321" />
+<img width="499" height="414" alt="image" src="https://github.com/user-attachments/assets/9799938c-1950-4f60-8656-2bd30314d85b" />
+<img width="756" height="964" alt="image" src="https://github.com/user-attachments/assets/07036124-5bcd-4d4b-aef5-0b84168bcd08" />
+
+
 ## Dependencies
 
 This project uses the following Python libraries:
