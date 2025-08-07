@@ -20,8 +20,8 @@ import os
 from map_utils import generate_map_with_stats
 from file_utils import cleanup_fit_folder, unzip_fit_files, get_user_path
 
-st.set_page_config(page_title="Postcode Challenge", layout="wide")
-st.title("🚴‍♂️ Postcode Challenge")
+st.set_page_config(page_title="Garmin GPS Challenge", layout="wide")
+st.title("🚴‍♂️ Garmin GPS Challenge")
 
 st.header("User Login")
 username = st.text_input("Enter your Garmin username", key="username")

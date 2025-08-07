@@ -10,38 +10,48 @@ from pathlib import Path
 logging.basicConfig(level=logging.INFO)
 
 def extract_gps_from_fit(file_path: Path, username: str, sport: str) -> int:
-    activity_id = file_path.stem.removesuffix("_ACTIVITY")  # removes .fit extension and _ACTIVITY suffix
+    activity_id = file_path.stem.removesuffix("_ACTIVITY")
     gps_csv_path = get_user_path(username, file_type="gps")
     gps_csv_path.parent.mkdir(parents=True, exist_ok=True)
 
+    # Check if activity already exists
     if gps_csv_path.exists():
-        df_existing = pd.read_csv(gps_csv_path, header=None, names=["lat", "lon", "activity_id", "sport"])
-        if activity_id in df_existing["activity_id"].astype(str).values:
-            logging.info(f"Activity {activity_id} already exists in gps_points.csv. Skipping.")
-            return 0
-    else:
-        df_existing = pd.DataFrame(columns=["lat", "lon", "activity_id", "sport"])
+        try:
+            df_existing_ids = pd.read_csv(
+                gps_csv_path, usecols=[2], header=None, names=["activity_id"]
+            )
+            if activity_id in df_existing_ids["activity_id"].astype(str).values:
+                logging.info(f"Activity {activity_id} already exists in gps_points.csv. Skipping.")
+                return 0
+        except pd.errors.EmptyDataError:
+            pass  # File exists but is empty
 
+    # Parse FIT file efficiently
     fitfile = FitFile(str(file_path))
     new_rows = []
 
-    for record in fitfile.get_messages("record"): 
-        record_data = {d.name: d.value for d in record} # type: ignore
-        lat_raw = record_data.get("position_lat")
-        lon_raw = record_data.get("position_long")
-
+    for record in fitfile.get_messages("record"):
+        lat_raw = None
+        lon_raw = None
+        for d in record: # type: ignore
+            if d.name == "position_lat":
+                lat_raw = d.value
+            elif d.name == "position_long":
+                lon_raw = d.value
         if lat_raw is not None and lon_raw is not None:
             lat = lat_raw * (180 / 2**31)
             lon = lon_raw * (180 / 2**31)
             new_rows.append([lat, lon, activity_id, sport])
 
+    # Append new rows to CSV
     if new_rows:
         df_new = pd.DataFrame(new_rows, columns=["lat", "lon", "activity_id", "sport"])
-        if not df_existing.empty:
-            df_combined = pd.concat([df_existing, df_new], ignore_index=True)
-        else:
-            df_combined = df_new
-        df_combined.to_csv(gps_csv_path, index=False, header=False)
+        df_new.to_csv(
+            gps_csv_path,
+            mode="a",
+            index=False,
+            header=not gps_csv_path.exists()
+        )
         logging.info(f"Wrote {len(new_rows)} points from activity {activity_id}")
     return len(new_rows)
 
